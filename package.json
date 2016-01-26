@@ -41,7 +41,9 @@
   },
   "dependencies": {
     "debug": "^1.0.4",
-    "express": "^4.8.5"
+    "express": "^4.8.5",
+    "mongodb": "^2.0.55",
+    "mongoskin": "^2.0.3"
   },
   "devDependencies": {
     "chai": "^1.9.1",
