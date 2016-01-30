@@ -40,8 +40,10 @@
     }
   },
   "dependencies": {
+    "body-parser": "^1.14.2",
     "debug": "^1.0.4",
     "express": "^4.8.5",
+    "mocha": "^2.4.5",
     "mongodb": "^2.0.55",
     "mongoskin": "^2.0.3"
   },

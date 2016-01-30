@@ -5,11 +5,39 @@ var express = require('express');
 var routes = require('../../lib/routes/books');
 var bodyParser = require('body-parser');
 var app = express();
+var MongoBook = require('../../lib/models/mongo-book');
+var mongoskin = require('mongoskin');
+var db = mongoskin.db('mongodb://@192.168.99.100:27017/express-lab-test',{safe:true});
+
+ 
+var seed =  [{
+    title: 'Gödel, Escher, Bach: an Eternal Golden Braid',
+    author: 'Douglas Hofstadter',
+    id:'geb'
+},
+{
+    title: 'The Beginning of Infinity, Explanations That Transform the World',
+    author: 'David Deutsch',
+    id:'tbi'
+},
+{
+    title: 'Zen and the Art of Motorcycle Maintenance',
+    author: 'Robert Pirsig',
+    id:'zamm'
+},
+{
+    title: 'Fooled by Randomness',
+    author: 'Nicholas Taleb',
+    id:'fbr'
+}];
+var mb = new MongoBook(db,seed);
 app.use(bodyParser.json());
 app.use('/books', routes);
 
 describe('GET /books', function() {
-    before(function() {
+    before(function(done) {
+        mb.reset(done); 
+        
         // sinon.spy(Model, 'generate');
     });
 
@@ -34,13 +62,13 @@ describe('GET /books', function() {
 	.expect(200)
 	.end(function(err,res){
 		if (err) throw err;
-		expect(res.body).to.be.a('object');
-		expect(res.body.author).to.equal('Nicholas Taleb');
+		expect(res.body).to.be.a('array');
+		expect(res.body[0].author).to.equal('Nicholas Taleb');
 		done();
 		});
 	});
     it('get filtered book (ASYNC)', function(done){
-    request(app).get('/books?filter=Douglas')
+    request(app).get('/books?filter=Taleb')
 	.expect(200)
 	.end(function(err,res){
 		if (err)throw err;
@@ -62,7 +90,7 @@ describe('GET /books', function() {
     .expect(200)
     .end(function(err,res){
        if (err) throw err;
-       expect(res.body).to.be.length(3);
+       expect(res.body.n).to.equal(1);
        done();
      });
   });
@@ -77,7 +105,7 @@ describe('GET /books', function() {
      .expect(200)
      .end(function(err,res){
           if (err) throw err;
-         expect(res.body).to.be.length(4);
+         expect(res.body.insertedCount).to.equal(1);
           done();
       });
   });
@@ -89,7 +117,7 @@ describe('GET /books', function() {
   .expect(200)
   .end(function(err, res){
     if (err) throw err;
-    expect(res.body).to.be.length(5);
+    expect(res.body.insertedCount).to.equal(1);
     done();
     });
   });
